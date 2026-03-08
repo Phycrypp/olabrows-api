@@ -55,7 +55,7 @@ public class AiController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=" + geminiApiKey;
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=" + geminiApiKey;
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(geminiRequest, headers);
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
 
