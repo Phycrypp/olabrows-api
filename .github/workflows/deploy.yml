@@ -41,9 +41,14 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            mv /home/ec2-user/target/olabrows-api-0.0.1-SNAPSHOT.jar /home/ec2-user/olabrows-api-0.0.1-SNAPSHOT.jar
+            mv -f /home/ec2-user/target/olabrows-api-0.0.1-SNAPSHOT.jar /home/ec2-user/olabrows-api-0.0.1-SNAPSHOT.jar
             sudo systemctl restart olabrows-api
             sleep 40
+            echo "=== Service Status ==="
+            sudo systemctl status olabrows-api --no-pager
+            echo "=== Last 20 logs ==="
+            sudo journalctl -u olabrows-api -n 20 --no-pager
+            echo "=== Testing API ==="
             curl -f http://localhost:8081/api/products || exit 1
 
       - name: Deploy to Green server
@@ -62,7 +67,12 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            mv /home/ec2-user/target/olabrows-api-0.0.1-SNAPSHOT.jar /home/ec2-user/olabrows-api-0.0.1-SNAPSHOT.jar
+            mv -f /home/ec2-user/target/olabrows-api-0.0.1-SNAPSHOT.jar /home/ec2-user/olabrows-api-0.0.1-SNAPSHOT.jar
             sudo systemctl restart olabrows-api
             sleep 40
+            echo "=== Service Status ==="
+            sudo systemctl status olabrows-api --no-pager
+            echo "=== Last 20 logs ==="
+            sudo journalctl -u olabrows-api -n 20 --no-pager
+            echo "=== Testing API ==="
             curl -f http://localhost:8081/api/products || exit 1
