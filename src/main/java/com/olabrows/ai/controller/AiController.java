@@ -11,29 +11,28 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class AiController {
 
-    @Value("${gemini.api.key}")
+    @Value("${gemini.api.key:NOT_SET}")
     private String geminiApiKey;
 
     @PostMapping("/chat")
     public ResponseEntity<Map<String, Object>> chat(@RequestBody Map<String, Object> request) {
         try {
+            if (geminiApiKey.equals("NOT_SET") || geminiApiKey.isEmpty()) {
+                return ResponseEntity.ok(Map.of("success", false, "message", "Gemini API key not configured"));
+            }
+
             String message = (String) request.get("message");
             List<Map<String, Object>> history = (List<Map<String, Object>>) request.getOrDefault("history", new ArrayList<>());
 
-            // Build Gemini request
             List<Map<String, Object>> contents = new ArrayList<>();
-
-            // Add history
             for (Map<String, Object> h : history) {
                 String role = (String) h.get("role");
                 String content = (String) h.get("content");
-                Map<String, Object> msg = new HashMap<>();
-                msg.put("role", role.equals("assistant") ? "model" : "user");
-                msg.put("parts", List.of(Map.of("text", content)));
-                contents.add(msg);
+                contents.add(Map.of(
+                    "role", role.equals("assistant") ? "model" : "user",
+                    "parts", List.of(Map.of("text", content))
+                ));
             }
-
-            // Add current message
             contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", message))));
 
             Map<String, Object> systemInstruction = Map.of(
@@ -71,7 +70,7 @@ public class AiController {
             return ResponseEntity.ok(Map.of("success", true, "message", reply));
 
         } catch (Exception e) {
-            return ResponseEntity.ok(Map.of("success", false, "message", "Sorry, I'm having trouble connecting. Please try again! 🌸"));
+            return ResponseEntity.ok(Map.of("success", false, "message", "Error: " + e.getMessage()));
         }
     }
 }
