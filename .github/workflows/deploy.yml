@@ -40,7 +40,7 @@ jobs:
           spring.mail.properties.mail.smtp.starttls.enable=true
           app.name=Browed by Ola
           app.email=hello@olabrows.store
-          gemini.api.key=${{ secrets.GEMINI_API_KEY }}
+          anthropic.api.key=${{ secrets.ANTHROPIC_API_KEY }}
           PROPS
 
       - name: Build JAR
