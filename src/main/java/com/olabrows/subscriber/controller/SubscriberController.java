@@ -2,6 +2,7 @@ package com.olabrows.subscriber.controller;
 
 import com.olabrows.subscriber.model.Subscriber;
 import com.olabrows.subscriber.service.SubscriberService;
+import com.olabrows.subscriber.repository.SubscriberRepository;
 import com.olabrows.email.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class SubscriberController {
     private SubscriberService subscriberService;
 
     @Autowired
+    private SubscriberRepository subscriberRepository;
+
+    @Autowired
     private EmailService emailService;
 
     @GetMapping
@@ -26,11 +30,14 @@ public class SubscriberController {
 
     @PostMapping
     public ResponseEntity<Subscriber> subscribe(@RequestBody Subscriber subscriber) {
+        boolean isNew = subscriberRepository.findByEmail(subscriber.getEmail()).isEmpty();
         Subscriber saved = subscriberService.subscribe(subscriber);
-        try {
-            emailService.sendWelcomeEmail(saved.getEmail(), saved.getName());
-        } catch (Exception e) {
-            System.err.println("Welcome email failed: " + e.getMessage());
+        if (isNew) {
+            try {
+                emailService.sendWelcomeEmail(saved.getEmail(), saved.getName());
+            } catch (Exception e) {
+                System.err.println("Welcome email failed: " + e.getMessage());
+            }
         }
         return ResponseEntity.ok(saved);
     }
