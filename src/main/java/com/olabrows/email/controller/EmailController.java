@@ -1,19 +1,20 @@
 package com.olabrows.email.controller;
 
-import com.olabrows.subscriber.model.Subscriber;
-import com.olabrows.subscriber.repository.SubscriberRepository;
+import com.olabrows.email.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Map;
+import com.olabrows.subscriber.repository.SubscriberRepository;
+import com.olabrows.subscriber.model.Subscriber;
+import jakarta.mail.internet.MimeMessage;
 
 @RestController
 @RequestMapping("/api/email")
-@CrossOrigin(origins = "*")
 public class EmailController {
 
     @Autowired
@@ -22,38 +23,59 @@ public class EmailController {
     @Autowired
     private SubscriberRepository subscriberRepository;
 
+    @Value("${app.email}")
+    private String fromEmail;
+
+    @Value("${app.name}")
+    private String appName;
+
+    // Send to ALL subscribers
     @PostMapping("/broadcast")
-    public ResponseEntity<?> broadcast(@RequestBody Map<String, String> payload) {
-        String subject = payload.get("subject");
-        String body = payload.get("body");
-
-        List<Subscriber> subscribers = subscriberRepository.findAll();
-        int sent = 0;
-        String lastError = null;
-
-        for (Subscriber s : subscribers) {
-            if (Boolean.TRUE.equals(s.getActive())) {
+    public ResponseEntity<Map<String, Object>> broadcast(
+            @RequestHeader("Authorization") String auth,
+            @RequestBody Map<String, String> payload) {
+        try {
+            String subject = payload.get("subject");
+            String body = payload.get("body");
+            List<Subscriber> subscribers = subscriberRepository.findByActiveTrue();
+            int sent = 0;
+            for (Subscriber s : subscribers) {
                 try {
-                    MimeMessage message = mailSender.createMimeMessage();
-                    MimeMessageHelper helper = new MimeMessageHelper(message, true);
-                    helper.setFrom("hello@olabrows.store", "Browed by Olá");
-                    helper.setTo(s.getEmail());
-                    helper.setSubject(subject);
-                    helper.setText(body, true);
-                    mailSender.send(message);
+                    sendHtml(s.getEmail(), subject, body);
                     sent++;
                 } catch (Exception e) {
-                    lastError = e.getMessage();
-                    e.printStackTrace();
+                    System.err.println("Failed to send to " + s.getEmail() + ": " + e.getMessage());
                 }
             }
+            return ResponseEntity.ok(Map.of("success", true, "sent", sent));
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of("success", false, "message", e.getMessage()));
         }
+    }
 
-        return ResponseEntity.ok(Map.of(
-            "message", "Broadcast complete",
-            "sent", sent,
-            "total", subscribers.size(),
-            "error", lastError != null ? lastError : "none"
-        ));
+    // Send to ONE specific email
+    @PostMapping("/send")
+    public ResponseEntity<Map<String, Object>> sendToOne(
+            @RequestHeader("Authorization") String auth,
+            @RequestBody Map<String, String> payload) {
+        try {
+            String to = payload.get("to");
+            String subject = payload.get("subject");
+            String body = payload.get("body");
+            sendHtml(to, subject, body);
+            return ResponseEntity.ok(Map.of("success", true, "sent", 1));
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    private void sendHtml(String to, String subject, String body) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setFrom(fromEmail, appName);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(body, true);
+        mailSender.send(message);
     }
 }
