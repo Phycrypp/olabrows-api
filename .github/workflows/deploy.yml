@@ -22,7 +22,7 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
 
-      - name: Create application.properties
+     - name: Create application.properties
         run: |
           cat > src/main/resources/application.properties << PROPS
           server.port=8081
@@ -32,6 +32,7 @@ jobs:
           spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
           spring.jpa.hibernate.ddl-auto=update
           spring.jpa.show-sql=false
+          spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
           spring.mail.host=email-smtp.us-east-1.amazonaws.com
           spring.mail.port=587
           spring.mail.username=${{ secrets.SES_USERNAME }}
@@ -41,8 +42,8 @@ jobs:
           app.name=Browed by Ola
           app.email=hello@olabrows.store
           anthropic.api.key=${{ secrets.ANTHROPIC_API_KEY }}
+          stripe.secret.key=${{ secrets.STRIPE_SECRET_KEY }}
           PROPS
-
       - name: Build JAR
         run: mvn clean package -DskipTests
 
