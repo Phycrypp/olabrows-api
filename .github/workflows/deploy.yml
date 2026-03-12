@@ -73,9 +73,13 @@ jobs:
           script: |
             mv -f /home/ec2-user/target/olabrows-api-0.0.1-SNAPSHOT.jar /home/ec2-user/olabrows-api-0.0.1-SNAPSHOT.jar
             sudo systemctl restart olabrows-api
-            sleep 40
-            sudo journalctl -u olabrows-api -n 10 --no-pager
-            curl -f http://localhost:8081/api/products || exit 1
+            for i in {1..24}; do
+              sleep 5
+              curl -sf http://localhost:8081/api/products && exit 0
+              echo "Waiting for API... attempt $i"
+            done
+            sudo journalctl -u olabrows-api -n 20 --no-pager
+            exit 1
 
       - name: Deploy to Green server
         uses: appleboy/scp-action@master
@@ -95,6 +99,10 @@ jobs:
           script: |
             mv -f /home/ec2-user/target/olabrows-api-0.0.1-SNAPSHOT.jar /home/ec2-user/olabrows-api-0.0.1-SNAPSHOT.jar
             sudo systemctl restart olabrows-api
-            sleep 40
-            sudo journalctl -u olabrows-api -n 10 --no-pager
-            curl -f http://localhost:8081/api/products || exit 1
+            for i in {1..24}; do
+              sleep 5
+              curl -sf http://localhost:8081/api/products && exit 0
+              echo "Waiting for API... attempt $i"
+            done
+            sudo journalctl -u olabrows-api -n 20 --no-pager
+            exit 1
