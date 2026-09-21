@@ -12,6 +12,8 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(unique = true, length = 64)
+    private String slug;
     @Column(columnDefinition = "TEXT")
     private String description;
     private BigDecimal price;
@@ -31,6 +33,8 @@ public class Product {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public String getSlug() { return slug; }
+    public void setSlug(String slug) { this.slug = slug; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }

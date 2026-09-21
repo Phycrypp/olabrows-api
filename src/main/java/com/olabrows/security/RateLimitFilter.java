@@ -32,6 +32,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
         int limit = -1;
         if (path.contains("/api/ai/chat") && "POST".equals(method)) {
             limit = AI_MAX;
+        } else if (path.contains("/api/auth/login") && "POST".equals(method)) {
+            limit = 5;
         } else if (path.contains("/api/payment/create-intent") && "POST".equals(method)) {
             limit = PAYMENT_MAX;
         } else if (path.contains("/api/subscribers") && "POST".equals(method)) {

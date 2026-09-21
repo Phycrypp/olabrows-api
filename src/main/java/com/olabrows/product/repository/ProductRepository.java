@@ -9,4 +9,6 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByActiveTrue();
     List<Product> findByNameContainingIgnoreCase(String name);
+
+    java.util.Optional<Product> findBySlug(String slug);
 }

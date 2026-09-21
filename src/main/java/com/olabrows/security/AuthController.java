@@ -1,5 +1,8 @@
 package com.olabrows.security;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +16,19 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    private static final String ADMIN_USERNAME = "admin";
-    private static final String ADMIN_PASSWORD = "OlaBrows2026!";
+    @Value("${admin.username}")
+    private String adminUsername;
+    @Value("${admin.password.hash}")
+    private String adminPasswordHash;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String username = credentials.get("username");
         String password = credentials.get("password");
 
-        if (ADMIN_USERNAME.equals(username) && ADMIN_PASSWORD.equals(password)) {
+        if (adminUsername.equals(username) && password != null && encoder.matches(password, adminPasswordHash)) {
             String token = jwtUtil.generateToken(username);
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
