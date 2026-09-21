@@ -1,5 +1,7 @@
 package com.olabrows.security;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -9,7 +11,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "olabrows-super-secret-key-2026-browed-by-ola";
+    @Value("${jwt.secret}")
+    private String SECRET;
     private static final long EXPIRATION = 86400000; // 24 hours
 
     private Key getSigningKey() {

@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/subscribers")
-@CrossOrigin(origins = "*")
 public class SubscriberController {
 
     @Autowired

@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/subscribers")
-@CrossOrigin(origins = "*")
 public class SubscriberImportController {
 
     @Autowired
