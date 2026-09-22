@@ -28,7 +28,7 @@ public class AuthController {
         String username = credentials.get("username");
         String password = credentials.get("password");
 
-        if (adminUsername.equals(username) && password != null && encoder.matches(password, adminPasswordHash)) {
+        if (adminUsername.equals(username) && password != null && !password.isBlank() && encoder.matches(password, adminPasswordHash)) {
             String token = jwtUtil.generateToken(username);
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
