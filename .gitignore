@@ -2,3 +2,4 @@ target/
 *.class
 application.properties
 *.jar
+.env
