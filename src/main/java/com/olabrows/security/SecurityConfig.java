@@ -2,6 +2,7 @@ package com.olabrows.security;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,8 +36,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/products").permitAll()
-                .requestMatchers("/api/subscribers").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/subscribers").permitAll()
                 .requestMatchers("/api/ai/chat").permitAll()
                 .requestMatchers("/api/payment/create-intent").permitAll()
                 .anyRequest().authenticated()
