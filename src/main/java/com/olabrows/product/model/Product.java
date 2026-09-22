@@ -14,6 +14,8 @@ public class Product {
     private String name;
     @Column(unique = true, length = 64)
     private String slug;
+    @Column(length = 20)
+    private String category;
     @Column(columnDefinition = "TEXT")
     private String description;
     private BigDecimal price;
@@ -33,6 +35,8 @@ public class Product {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
     public String getSlug() { return slug; }
     public void setSlug(String slug) { this.slug = slug; }
     public String getName() { return name; }
