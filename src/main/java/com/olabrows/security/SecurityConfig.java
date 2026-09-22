@@ -39,7 +39,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/subscribers").permitAll()
                 .requestMatchers("/api/ai/chat").permitAll()
-                .requestMatchers("/api/payment/create-intent").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/checkout/initialize", "/api/payment/webhook").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/checkout/verify/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

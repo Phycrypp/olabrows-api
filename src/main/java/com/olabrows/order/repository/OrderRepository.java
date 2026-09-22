@@ -9,4 +9,9 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByCustomerEmail(String email);
     List<Order> findByStatus(Order.OrderStatus status);
+
+    java.util.Optional<Order> findByReference(String reference);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    java.util.Optional<Order> findWithLockByReference(String reference);
 }

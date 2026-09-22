@@ -24,6 +24,11 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PENDING;
     private String notes;
+    @Column(unique = true, length = 20)
+    private String reference;
+    @Column(columnDefinition = "TEXT")
+    private String itemsJson;
+    private LocalDateTime paidAt;
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -59,6 +64,12 @@ public class Order {
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public OrderStatus getStatus() { return status; }
     public void setStatus(OrderStatus status) { this.status = status; }
+    public String getReference() { return reference; }
+    public void setReference(String reference) { this.reference = reference; }
+    public String getItemsJson() { return itemsJson; }
+    public void setItemsJson(String itemsJson) { this.itemsJson = itemsJson; }
+    public LocalDateTime getPaidAt() { return paidAt; }
+    public void setPaidAt(LocalDateTime paidAt) { this.paidAt = paidAt; }
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
     public LocalDateTime getCreatedAt() { return createdAt; }
